@@ -6,6 +6,10 @@ let currentProducts = [];
 let currentPagination = {};
 
 // inititiqte selectors
+const sortSelect = document.querySelector('#sort-select');
+const FilterBRP =document.querySelector('#BRP');
+const FilterBRR = document.querySelector('#BRR');
+const SelectBrand =  document.querySelector('#brand-select');
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const sectionProducts = document.querySelector('#products');
@@ -55,14 +59,37 @@ const renderProducts = products => {
   const div = document.createElement('div');
   const template = products
     .map(product => {
-      return `
-      <div class="product" id=${product.uuid}>
-        <span>${product.brand}</span>
-        <a href="${product.link}">${product.name}</a>
-        <span>${product.price}</span>
-      </div>
-    `;
-    })
+        return `
+        <div class="product" id=${product.uuid}>
+          <span>${product.brand}</span>
+          <a href="${product.link}">${product.name}</a>
+          <span>${product.price}</span>
+        </div>
+        `;
+      })
+    .join('');
+
+  div.innerHTML = template;
+  fragment.appendChild(div);
+  sectionProducts.innerHTML = '<h2>Products</h2>';
+  sectionProducts.appendChild(fragment);
+};
+
+const renderProductsBrands = products => {
+  const fragment = document.createDocumentFragment();
+  const div = document.createElement('div');
+  const template = products
+    .map(product => {
+      if (product.brand == SelectBrand.value){
+        return `
+        <div class="product" id=${product.uuid}>
+          <span>${product.brand}</span>
+          <a href="${product.link}">${product.name}</a>
+          <span>${product.price}</span>
+        </div>
+        `;
+      }
+      })
     .join('');
 
   div.innerHTML = template;
@@ -96,10 +123,58 @@ const renderIndicators = pagination => {
   spanNbProducts.innerHTML = count;
 };
 
-const render = (products, pagination) => {
+const render = (products, pagination ) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+  renderBrand(products)
+};
+
+
+const renderBrand = brand => {
+  const namebrand =[];
+  for (var i =0; i<brand.length; i++)
+  {
+    if (namebrand.includes(brand[i]["brand"])==false)
+    {
+      namebrand.push(brand[i]["brand"])
+    }
+  }
+  const options = Array.from(
+  {'length': namebrand.length},
+  (value, index)=> `<option value="${namebrand[index]}">${namebrand[index]}</option>`
+  ).join('');
+
+  SelectBrand.innerHTML=options;
+  SelectBrand.selectedIndex =options; 
+
+}
+
+const filterPrice = (products) => {
+    const filteredList = [];
+  for(var i = 0; i<products.length; i++)
+  {
+    if(products[i]["price"] <= 50)
+    {
+      filteredList.push(products[i]);
+    }
+  }
+  renderProducts(filteredList);
+};
+
+const SortPriceC = (products) => {
+    const filteredList = [];
+  for(var j=0; j<480;j++)
+  {
+    for(var i = 0; i<products.length; i++)
+    {
+      if(products[i]["price"] == j)
+      {
+        filteredList.push(products[i]);
+      }
+    }
+  }
+  renderProducts(filteredList);
 };
 
 /**
@@ -114,6 +189,26 @@ selectShow.addEventListener('change', event => {
   fetchProducts(currentPagination.currentPage, parseInt(event.target.value))
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
+});
+
+selectPage.addEventListener('change', event => {
+  fetchProducts(parseInt(event.target.value), selectShow.value)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+
+SelectBrand.addEventListener('change', event => {
+renderProductsBrands(currentProducts)
+});
+
+FilterBRP.addEventListener('click', event => {
+filterPrice(currentProducts)
+})
+
+sortSelect.addEventListener('change', event => {
+  if(event.target.value =='Expensive'){
+    SortPriceC(currentProducts)
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () =>

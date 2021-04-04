@@ -9,36 +9,22 @@ const cheerio = require('cheerio');
 const parse = data => {
   const $ = cheerio.load(data);
 
-  return $('.productList-container .productList')
+  return $('.product-meta')
     .map((i, element) => {
       const name = $(element)
-        .find('.productList-title')
+        .find('.product-title')
         .text()
         .trim()
         .replace(/\s/g, ' ');
       const price = parseInt(
         $(element)
-          .find('.productList-price')
+          .find('.row .col col-xs-8 col-md-6 product-prices .product-price .product-price-prepend')
           .text()
       );
 
       return {name, price};
     })
     .get();
-};
-
-
-function parseHomepage(data) {
-  const $ = cheerio.load(data);
-  return $('.js-cmsModule')
-    .map((i, element) => {
-      var href= $(element)
-        .find('a')
-        .attr('href');
-      href="https://www.dedicatedbrand.com"+href;
-      return {href};
-    })
-    .get()
 };
 
 /**
@@ -52,19 +38,6 @@ module.exports.scrape = async url => {
 
   if (status >= 200 && status < 300) {
     return parse(data);
-  }
-
-  console.error(status);
-
-  return null;
-};
-
-module.exports.scrapeLinks = async url => {
-  const response = await axios(url);
-  const {data, status} = response;
-
-  if (status >= 200 && status < 300) {
-    return parseHomepage(data);
   }
 
   console.error(status);
