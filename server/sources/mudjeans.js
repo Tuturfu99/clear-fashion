@@ -18,8 +18,12 @@ const parse = data => {
         .replace(/\s/g, ' ');
       const price = parseInt(
         $(element)
-          .find('.row .col col-xs-8 col-md-6 product-prices .product-price .product-price-prepend')
+          .find('.product-prices')
           .text()
+          .replace(/Lease for €[0-9]+,[0-9]+/,'')
+          .replace(/buy/i, '')
+          .replace(/\n/g,'')
+          .replace(/€/g,'')
       );
 
       return {name, price};

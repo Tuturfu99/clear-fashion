@@ -31,10 +31,14 @@ const setCurrentProducts = ({result, meta}) => {
  * @param  {Number}  [size=12] - size of the page
  * @return {Object}
  */
+
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
       `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+    );
+    const response2= await fetch(
+      `https://server-zeta-sable.vercel.app/products?page=${page}&size=${size}`
     );
     const body = await response.json();
 
