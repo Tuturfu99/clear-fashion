@@ -79,14 +79,11 @@ app.get('/products', async(request, response) => {
 		{
 			size=12;
 		}
-
 		for(i=debut; i< debut+size;i++){
-
 			if(result[i] != null){
  				prod.push(result[i]);
  			}
  		}
-
 		response.send({"page" :true,"success" :true, "data" : { "meta" :{"currentPage":page, "pageSize":size, 
 			"pageCount":prod.length, "count":result.length}, "result":prod}});
 		//response.send({'a': prod});
